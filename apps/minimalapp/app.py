@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, current_app, g, redirect, request, flash
+from flask import Flask, render_template, url_for, current_app, g, redirect, request, flash, make_response, session
 from email_validator import validate_email, EmailNotValidError
 import logging
 from flask_debugtoolbar import DebugToolbarExtension
@@ -7,7 +7,7 @@ import os
 from flask_mail import Mail, Message
 
 app = Flask(__name__)
-
+app.debug = True
 app.config["MAIL_SERVER"]=os.environ.get("MAIL_SERVER")
 app.config["MAIL_PORT"]=os.environ.get("MAIL_PORT")
 app.config["MAIL_USE_TLS"]=os.environ.get("MAIL_USE_TLS")
@@ -39,7 +39,10 @@ def show_name(name):
 
 @app.route("/contact")
 def contact():
-    return render_template("contact.html")
+    response = make_response(render_template("contact.html"))
+    response.set_cookie("flask key", "flaskbook value")
+    session["username"]="ichiro"
+    return response
 
 @app.route("/contact/complete", methods=["GET", "POST"])
 def contact_complete():
